@@ -179,6 +179,7 @@ public static class AtlasHandler
         {
             try
             {
+                atlas.Dispose();
                 File.Delete(atlasImagePath);
                 File.Delete(jsonPath);
                 Console.WriteLine($"[✓] Deleted original atlas and metadata files.");

@@ -55,55 +55,6 @@
           "buildTransitive/net8.0/_._": {}
         }
       }
-    },
-    "net9.0/win-x64": {
-      "Microsoft.Win32.SystemEvents/10.0.0-preview.5.25277.114": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/Microsoft.Win32.SystemEvents.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "runtimes/win/lib/net9.0/Microsoft.Win32.SystemEvents.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      },
-      "System.Drawing.Common/10.0.0-preview.5.25277.114": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Win32.SystemEvents": "10.0.0-preview.5.25277.114"
-        },
-        "compile": {
-          "lib/net9.0/System.Drawing.Common.dll": {
-            "related": ".pdb;.xml"
-          },
-          "lib/net9.0/System.Private.Windows.Core.dll": {
-            "related": ".xml"
-          },
-          "lib/net9.0/System.Private.Windows.GdiPlus.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/System.Drawing.Common.dll": {
-            "related": ".pdb;.xml"
-          },
-          "lib/net9.0/System.Private.Windows.Core.dll": {
-            "related": ".xml"
-          },
-          "lib/net9.0/System.Private.Windows.GdiPlus.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      }
     }
   },
   "libraries": {
@@ -274,11 +225,6 @@
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
-      }
-    },
-    "runtimes": {
-      "win-x64": {
-        "#import": []
       }
     }
   }

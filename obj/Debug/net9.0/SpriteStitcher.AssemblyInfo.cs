@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SpriteStitcher")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a165e79b07911f7dca89a8d85e634bb02caeb123")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+52f12f2d45e9750a3fedc4e9a588b2e9f02d2e2a")]
 [assembly: System.Reflection.AssemblyProductAttribute("SpriteStitcher")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SpriteStitcher")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
