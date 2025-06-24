@@ -13,7 +13,7 @@ class Program
         Console.WriteLine("---------------------------------------------------");
         Console.WriteLine("Usage: <your-sprite-folder-path> [--stitch | --unstitch] <atlas-name> [--padding <amount (Default: 2)>]");
         Console.WriteLine("Options:");
-        Console.WriteLine("  --stitch       : Stitch images into a sprite atlas - <atlas-name> is the name to save the atlas by");
+        Console.WriteLine("  --stitch       : Stitch images into a sprite atlas - <atlas-name> is the name to save the atlas by, ending in .png");
         Console.WriteLine("  --unstitch     : Unstitch a sprite atlas into individual images - <atlas-name> is the name of the atlas to unstitch");
         Console.WriteLine("  --padding <n>  : Set padding between images in the atlas (default: 2)");
         Console.WriteLine("---------------------------------------------------");
