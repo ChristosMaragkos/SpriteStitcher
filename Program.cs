@@ -29,10 +29,10 @@ class Program
             switch (operation)
             {
                 case "--stitch":
-                    AtlasStitcher.StitchAtlas(inputDirectory, outputDirectory, padding, out didJob, atlasName);
+                    AtlasHandler.StitchAtlas(inputDirectory, outputDirectory, padding, out didJob, atlasName);
                     break;
                 case "--unstitch":
-                    AtlasStitcher.UnstitchAtlas(inputDirectory, atlasName, out didJob);
+                    AtlasHandler.UnstitchAtlas(inputDirectory, atlasName, out didJob);
                     break;
                 default:
                     Console.WriteLine("No valid operation specified. Please use --stitch or --unstitch.");
