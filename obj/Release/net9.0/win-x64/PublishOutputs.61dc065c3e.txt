@@ -1,0 +1,9 @@
+D:\coding projects\csharp\SpriteStitcher\bin\Release\net9.0\win-x64\publish\SpriteStitcher.exe
+D:\coding projects\csharp\SpriteStitcher\bin\Release\net9.0\win-x64\publish\SpriteStitcher.dll
+D:\coding projects\csharp\SpriteStitcher\bin\Release\net9.0\win-x64\publish\SpriteStitcher.deps.json
+D:\coding projects\csharp\SpriteStitcher\bin\Release\net9.0\win-x64\publish\SpriteStitcher.runtimeconfig.json
+D:\coding projects\csharp\SpriteStitcher\bin\Release\net9.0\win-x64\publish\SpriteStitcher.pdb
+D:\coding projects\csharp\SpriteStitcher\bin\Release\net9.0\win-x64\publish\Microsoft.Win32.SystemEvents.dll
+D:\coding projects\csharp\SpriteStitcher\bin\Release\net9.0\win-x64\publish\System.Drawing.Common.dll
+D:\coding projects\csharp\SpriteStitcher\bin\Release\net9.0\win-x64\publish\System.Private.Windows.Core.dll
+D:\coding projects\csharp\SpriteStitcher\bin\Release\net9.0\win-x64\publish\System.Private.Windows.GdiPlus.dll
