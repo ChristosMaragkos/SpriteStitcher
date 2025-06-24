@@ -11,18 +11,32 @@ class Program
         Console.WriteLine("is placed in a separate folder in your directory for easy access.");
         Console.WriteLine("Alternatively, you can also unstitch an atlas back into individual images.");
         Console.WriteLine("---------------------------------------------------");
-        Console.WriteLine("Usage: <your-sprite-folder-path> [--stitch | --unstitch] [--padding <amount (Default: 2)>] [--recursive]");
+        Console.WriteLine("Usage: <your-sprite-folder-path> [--stitch | --unstitch] [--padding <amount (Default: 2)>]");
         Console.WriteLine("Options:");
         Console.WriteLine("  --stitch       : Stitch images into a sprite atlas");
         Console.WriteLine("  --unstitch     : Unstitch a sprite atlas into individual images");
         Console.WriteLine("  --padding <n>  : Set padding between images in the atlas (default: 2)");
-        Console.WriteLine("  --recursive    : Recursively search for images in subdirectories");
         Console.WriteLine("---------------------------------------------------");
         
-        var (inputDirectory, operation, padding, recursive) = ParseArguments(args);
+        var (inputDirectory, operation, padding) = ParseArguments(args);
+        
+        var outputDirectory = Path.Combine(inputDirectory, "SpriteStitcher");
+
+        switch (operation)
+        {
+            case "--stitch":
+                AtlasStitcher.StitchAtlas(inputDirectory, outputDirectory, padding);
+                break;
+            case "--unstitch":
+                AtlasStitcher.UnstitchAtlas(inputDirectory, outputDirectory);
+                break;
+            default:
+                Console.WriteLine("No valid operation specified. Please use --stitch or --unstitch.");
+                break;
+        }
     }
 
-    static (string inputDirectory, string operation, int padding, bool recursive) ParseArguments(string[] args)
+    static (string inputDirectory, string operation, int padding) ParseArguments(string[] args)
     {
         
         while (true)
@@ -50,7 +64,6 @@ class Program
             var inputDirectory = inputArgs[0].Trim('"');
             var operation = "";
             var padding = 2; // Default padding
-            var recursive = false;
 
             var invalidArgs = false;
 
@@ -80,7 +93,6 @@ class Program
             if (!(inputArgs.Contains("--stitch") || inputArgs.Contains("--unstitch")) 
                                                  || (inputArgs.Contains("--stitch") && inputArgs.Contains("--unstitch")))
             {
-                invalidArgs = true;
                 Console.WriteLine("You must specify either --stitch or --unstitch.");
                 args = Array.Empty<string>();
                 continue;
@@ -91,10 +103,10 @@ class Program
                 switch (inputArgs[i].ToLower())
                 {
                     case "--stitch":
-                        operation = "stitch";
+                        operation = "--stitch";
                         break;
                     case "--unstitch":
-                        operation = "unstitch";
+                        operation = "--unstitch";
                         break;
                     case "--padding":
                         if (i + 1 < inputArgs.Length && int.TryParse(inputArgs[i + 1], out var parsedPadding))
@@ -107,9 +119,6 @@ class Program
                             Console.WriteLine("Invalid padding value. Please provide a valid integer.");
                             invalidArgs = true;
                         }
-                        break;
-                    case "--recursive":
-                        recursive = true;
                         break;
                     default:
                         Console.WriteLine("Invalid argument: " + inputArgs[i]);
@@ -124,8 +133,43 @@ class Program
                 args = Array.Empty<string>(); // reset for next loop
                 continue;
             }
+            
+            // Extra validation per operation
+            bool validInputFound;
 
-            return (inputDirectory, operation, padding, recursive);
+            switch (operation)
+            {
+                case "stitch":
+                {
+                    var pngFiles = Directory.GetFiles(inputDirectory, "*.png", SearchOption.TopDirectoryOnly)
+                        .Where(path => !path.Contains("SpriteStitcher")); // avoid previous output
+                    validInputFound = pngFiles.Any();
+
+                    if (!validInputFound)
+                    {
+                        Console.WriteLine("No .png files found to stitch in the specified folder.");
+                        args = Array.Empty<string>();
+                        continue;
+                    }
+
+                    break;
+                }
+                case "unstitch":
+                {
+                    var atlasPath = Path.Combine(inputDirectory, "atlas.png");
+                    var jsonPath = Path.Combine(inputDirectory, "atlas.json");
+
+                    validInputFound = File.Exists(atlasPath) && File.Exists(jsonPath);
+
+                    if (validInputFound) return (inputDirectory, operation, padding);
+                    Console.WriteLine("No sprite atlas found in the specified folder.");
+                    args = Array.Empty<string>();
+                    continue;
+                }
+            }
+
+
+            return (inputDirectory, operation, padding);
         }
         
     }

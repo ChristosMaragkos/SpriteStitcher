@@ -7,8 +7,46 @@
   "targets": {
     ".NETCoreApp,Version=v9.0": {
       "SpriteStitcher/1.0.0": {
+        "dependencies": {
+          "System.Drawing.Common": "10.0.0-preview.5.25277.114"
+        },
         "runtime": {
           "SpriteStitcher.dll": {}
+        }
+      },
+      "Microsoft.Win32.SystemEvents/10.0.0-preview.5.25277.114": {
+        "runtime": {
+          "lib/net9.0/Microsoft.Win32.SystemEvents.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.25.27814"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net9.0/Microsoft.Win32.SystemEvents.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.25.27814"
+          }
+        }
+      },
+      "System.Drawing.Common/10.0.0-preview.5.25277.114": {
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "10.0.0-preview.5.25277.114"
+        },
+        "runtime": {
+          "lib/net9.0/System.Drawing.Common.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.25.27814"
+          },
+          "lib/net9.0/System.Private.Windows.Core.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.25.27814"
+          },
+          "lib/net9.0/System.Private.Windows.GdiPlus.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.25.27814"
+          }
         }
       }
     }
@@ -18,6 +56,20 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Microsoft.Win32.SystemEvents/10.0.0-preview.5.25277.114": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yU2UaYqz6kExcrIk5wPjXLk7NCSnGLaJmigYpRDxiC8WZn1ydjfC4PTbx1fsiOYKn+8sYQaM1WELlbs5LjMR8w==",
+      "path": "microsoft.win32.systemevents/10.0.0-preview.5.25277.114",
+      "hashPath": "microsoft.win32.systemevents.10.0.0-preview.5.25277.114.nupkg.sha512"
+    },
+    "System.Drawing.Common/10.0.0-preview.5.25277.114": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-mqh5I3d891N/SKM+Bx/EriJB/jEukaIMPxXe0Yx7cXv//aNDbUr+FaRDqlxToYZC1s/ZoZenksMmpiT+BbS/8g==",
+      "path": "system.drawing.common/10.0.0-preview.5.25277.114",
+      "hashPath": "system.drawing.common.10.0.0-preview.5.25277.114.nupkg.sha512"
     }
   }
 }

@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "TTpgdZ/Q+F8=",
+  "dgSpecHash": "Hckqzahl3us=",
   "success": true,
   "projectFilePath": "D:\\coding projects\\csharp\\SpriteStitcher\\SpriteStitcher.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Chris\\.nuget\\packages\\microsoft.win32.systemevents\\10.0.0-preview.5.25277.114\\microsoft.win32.systemevents.10.0.0-preview.5.25277.114.nupkg.sha512",
+    "C:\\Users\\Chris\\.nuget\\packages\\system.drawing.common\\10.0.0-preview.5.25277.114\\system.drawing.common.10.0.0-preview.5.25277.114.nupkg.sha512"
+  ],
   "logs": []
 }

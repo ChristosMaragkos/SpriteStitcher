@@ -13,3 +13,10 @@ D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\refint\SpriteStitcher.
 D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.pdb
 D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.genruntimeconfig.cache
 D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\ref\SpriteStitcher.dll
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\Microsoft.Win32.SystemEvents.dll
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\System.Drawing.Common.dll
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\System.Private.Windows.Core.dll
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\System.Private.Windows.GdiPlus.dll
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.csproj.AssemblyReference.cache
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteSt.5828A119.Up2Date
