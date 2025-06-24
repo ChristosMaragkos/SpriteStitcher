@@ -2,7 +2,7 @@
 
 class Program
 {
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
         Console.WriteLine("SpriteStitcher - Create Sprite Atlases from a directory of images");
         Console.WriteLine("---------------------------------------------------");
@@ -11,32 +11,44 @@ class Program
         Console.WriteLine("is placed in a separate folder in your directory for easy access.");
         Console.WriteLine("Alternatively, you can also unstitch an atlas back into individual images.");
         Console.WriteLine("---------------------------------------------------");
-        Console.WriteLine("Usage: <your-sprite-folder-path> [--stitch | --unstitch] [--padding <amount (Default: 2)>]");
+        Console.WriteLine("Usage: <your-sprite-folder-path> [--stitch | --unstitch] <atlas-name> [--padding <amount (Default: 2)>]");
         Console.WriteLine("Options:");
-        Console.WriteLine("  --stitch       : Stitch images into a sprite atlas");
-        Console.WriteLine("  --unstitch     : Unstitch a sprite atlas into individual images");
+        Console.WriteLine("  --stitch       : Stitch images into a sprite atlas - <atlas-name> is the name to save the atlas by");
+        Console.WriteLine("  --unstitch     : Unstitch a sprite atlas into individual images - <atlas-name> is the name of the atlas to unstitch");
         Console.WriteLine("  --padding <n>  : Set padding between images in the atlas (default: 2)");
         Console.WriteLine("---------------------------------------------------");
-        
-        var (inputDirectory, operation, padding) = ParseArguments(args);
-        
-        var outputDirectory = Path.Combine(inputDirectory, "SpriteStitcher");
 
-        switch (operation)
+        while (true)
         {
-            case "--stitch":
-                AtlasStitcher.StitchAtlas(inputDirectory, outputDirectory, padding);
-                break;
-            case "--unstitch":
-                AtlasStitcher.UnstitchAtlas(inputDirectory, outputDirectory);
-                break;
-            default:
-                Console.WriteLine("No valid operation specified. Please use --stitch or --unstitch.");
-                break;
+            var didJob = false;
+            
+            var (inputDirectory, operation, padding, atlasName) = ParseArguments(args);
+        
+            var outputDirectory = Path.Combine(inputDirectory, "stitched");
+
+            switch (operation)
+            {
+                case "--stitch":
+                    AtlasStitcher.StitchAtlas(inputDirectory, outputDirectory, padding, out didJob, atlasName);
+                    break;
+                case "--unstitch":
+                    AtlasStitcher.UnstitchAtlas(inputDirectory, atlasName, out didJob);
+                    break;
+                default:
+                    Console.WriteLine("No valid operation specified. Please use --stitch or --unstitch.");
+                    break;
+            }
+
+            if (didJob) break;
+            
         }
+        
+        Console.WriteLine("Operation completed.");
+        Console.WriteLine("Press any key to exit.");
+        Console.ReadKey();
     }
 
-    static (string inputDirectory, string operation, int padding) ParseArguments(string[] args)
+    static (string inputDirectory, string operation, int padding, string atlasName) ParseArguments(string[] args)
     {
         
         while (true)
@@ -57,13 +69,14 @@ class Program
             if (inputArgs.Length == 0)
             {
                 Console.WriteLine("No arguments provided. Please specify a directory and operation.");
-                args = Array.Empty<string>();
+                args = [];
                 continue;
             }
             
             var inputDirectory = inputArgs[0].Trim('"');
             var operation = "";
             var padding = 2; // Default padding
+            var atlasName = string.Empty;
 
             var invalidArgs = false;
 
@@ -72,21 +85,20 @@ class Program
                 inputArgs[0].Equals("-h", StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine("---------------------------------------------------");
-                Console.WriteLine("Usage: <your-sprite-folder-path> [--stitch | --unstitch] [--padding <amount (Default: 2)>] [--recursive]");
+                Console.WriteLine("Usage: <your-sprite-folder-path> [--stitch | --unstitch] <atlas-name> [--padding <amount (Default: 2)>]");
                 Console.WriteLine("Options:");
-                Console.WriteLine("  --stitch       : Stitch images into a sprite atlas");
-                Console.WriteLine("  --unstitch     : Unstitch a sprite atlas into individual images");
+                Console.WriteLine("  --stitch       : Stitch images into a sprite atlas - <atlas-name> is the name to save the atlas by");
+                Console.WriteLine("  --unstitch     : Unstitch a sprite atlas into individual images - <atlas-name> is the name of the atlas to unstitch");
                 Console.WriteLine("  --padding <n>  : Set padding between images in the atlas (default: 2)");
-                Console.WriteLine("  --recursive    : Recursively search for images in subdirectories");
                 Console.WriteLine("---------------------------------------------------");
-                args = Array.Empty<string>();
+                args = [];
                 continue;
             }
 
             if (!Directory.Exists(inputDirectory))
             {
                 Console.WriteLine("The specified directory does not exist: " + inputDirectory);
-                args = Array.Empty<string>();
+                args = [];
                 continue;
             }
 
@@ -94,7 +106,7 @@ class Program
                                                  || (inputArgs.Contains("--stitch") && inputArgs.Contains("--unstitch")))
             {
                 Console.WriteLine("You must specify either --stitch or --unstitch.");
-                args = Array.Empty<string>();
+                args = [];
                 continue;
             }
 
@@ -104,9 +116,41 @@ class Program
                 {
                     case "--stitch":
                         operation = "--stitch";
+                        if (i + 1 < inputArgs.Length)
+                        {
+                            // The next argument should be the name for the atlas
+                            atlasName = inputArgs[i + 1].Trim('"');
+                            if (string.IsNullOrEmpty(atlasName))
+                            {
+                                Console.WriteLine("Please provide a valid atlas name.");
+                                invalidArgs = true;
+                            }
+                            i++; // Skip the next argument since it's the value for the atlas name
+                        }
+                        else
+                        {
+                            Console.WriteLine("No atlas name provided for stitching.");
+                            invalidArgs = true;
+                        }
                         break;
                     case "--unstitch":
                         operation = "--unstitch";
+                        if (i + 1 < inputArgs.Length)
+                        {
+                            // The next argument should be the name of the atlas to unstitch
+                            atlasName = inputArgs[i + 1].Trim('"');
+                            if (string.IsNullOrEmpty(atlasName))
+                            {
+                                Console.WriteLine("Please provide a valid atlas name to unstitch.");
+                                invalidArgs = true;
+                            }
+                            i++; // Skip the next argument since it's the value for the atlas name
+                        }
+                        else
+                        {
+                            Console.WriteLine("No atlas name provided for unstitching.");
+                            invalidArgs = true;
+                        }
                         break;
                     case "--padding":
                         if (i + 1 < inputArgs.Length && int.TryParse(inputArgs[i + 1], out var parsedPadding))
@@ -130,7 +174,7 @@ class Program
             if (invalidArgs)
             {
                 Console.WriteLine("Use --help for usage.");
-                args = Array.Empty<string>(); // reset for next loop
+                args = []; // reset for next loop
                 continue;
             }
             
@@ -148,7 +192,7 @@ class Program
                     if (!validInputFound)
                     {
                         Console.WriteLine("No .png files found to stitch in the specified folder.");
-                        args = Array.Empty<string>();
+                        args = [];
                         continue;
                     }
 
@@ -161,15 +205,15 @@ class Program
 
                     validInputFound = File.Exists(atlasPath) && File.Exists(jsonPath);
 
-                    if (validInputFound) return (inputDirectory, operation, padding);
+                    if (validInputFound) return (inputDirectory, operation, padding, atlasName);
                     Console.WriteLine("No sprite atlas found in the specified folder.");
-                    args = Array.Empty<string>();
+                    args = [];
                     continue;
                 }
             }
 
 
-            return (inputDirectory, operation, padding);
+            return (inputDirectory, operation, padding, atlasName);
         }
         
     }
