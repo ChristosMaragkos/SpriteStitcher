@@ -1,0 +1,15 @@
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\SpriteStitcher.exe
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\SpriteStitcher.deps.json
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\SpriteStitcher.runtimeconfig.json
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\SpriteStitcher.dll
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\SpriteStitcher.pdb
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.GeneratedMSBuildEditorConfig.editorconfig
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.AssemblyInfoInputs.cache
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.AssemblyInfo.cs
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.csproj.CoreCompileInputs.cache
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.sourcelink.json
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.dll
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\refint\SpriteStitcher.dll
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.pdb
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.genruntimeconfig.cache
+D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\ref\SpriteStitcher.dll
