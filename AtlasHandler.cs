@@ -179,6 +179,7 @@ public static class AtlasHandler
         {
             try
             {
+                // ReSharper disable once DisposeOnUsingVariable
                 atlas.Dispose();
                 File.Delete(atlasImagePath);
                 File.Delete(jsonPath);
