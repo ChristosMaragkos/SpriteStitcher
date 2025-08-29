@@ -11,40 +11,50 @@ public static class AtlasPacker
         out int atlasWidth, out int atlasHeight)
     {
         var positions = new Dictionary<string, AtlasHandler.SpriteRect>();
-
         var skyline = new List<(int X, int Y)> { (0, 0) };
         atlasWidth = 0;
         atlasHeight = 0;
 
         foreach (var (name, image) in images)
         {
+            var wWithPad = image.Width + padding;
+            var hWithPad = image.Height + padding;
+
+            if (wWithPad > maxAtlasWidth)
+                throw new Exception(
+                    $"Sprite {name} (width + padding {wWithPad}) exceeds max atlas width {maxAtlasWidth}.");
+
             int bestX = -1, bestY = int.MaxValue;
-            
+
             for (var i = 0; i < skyline.Count; i++)
             {
                 var (startX, startY) = skyline[i];
-                var w = image.Width + padding;
-                var h = image.Height + padding;
 
-                if (startX + w > maxAtlasWidth)
+                if (startX + wWithPad > maxAtlasWidth)
                     continue;
-                
+
                 var maxY = startY;
                 var j = i + 1;
-                var endX = startX + w;
+                var endX = startX + wWithPad;
                 while (j < skyline.Count && skyline[j].X < endX)
                 {
                     maxY = Math.Max(maxY, skyline[j].Y);
                     j++;
                 }
 
-                if (maxY + h >= bestY) continue;
+                if (maxY + hWithPad >= bestY) continue;
                 bestX = startX;
                 bestY = maxY;
             }
 
+            // Start a new row if no fit found
             if (bestX == -1)
-                throw new Exception($"Could not pack sprite {name}, too wide for atlas.");
+            {
+                bestX = 0;
+                bestY = atlasHeight; // place at the current bottom
+                skyline.Clear();
+                skyline.Add((0, bestY));
+            }
 
             positions[name] = new AtlasHandler.SpriteRect
             {
@@ -53,10 +63,11 @@ public static class AtlasPacker
                 Width = image.Width,
                 Height = image.Height
             };
-            
+
             var insertX = bestX;
             var insertY = bestY + image.Height + padding;
             var insertEnd = bestX + image.Width + padding;
+
             skyline.Add((insertX, insertY));
             skyline = skyline
                 .Where(s => s.X < insertX || s.X > insertEnd)

@@ -20,3 +20,4 @@ D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\System.Private.Windows
 D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\runtimes\win\lib\net9.0\Microsoft.Win32.SystemEvents.dll
 D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteStitcher.csproj.AssemblyReference.cache
 D:\coding projects\csharp\SpriteStitcher\obj\Debug\net9.0\SpriteSt.5828A119.Up2Date
+D:\coding projects\csharp\SpriteStitcher\bin\Debug\net9.0\CommandLine.dll
