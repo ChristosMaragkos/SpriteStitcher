@@ -1,8 +1,57 @@
-﻿namespace SpriteStitcher;
+﻿using CommandLine;
+
+namespace SpriteStitcher;
 
 class Program
 {
-    private static void Main(string[] args)
+
+    [Verb("stitch", true, HelpText = "Stitch all PNG images in the specified directory into a sprite atlas.")]
+    private class StitchOptions
+    {
+        [Value(0,
+            MetaName = "input-directory",
+            Required = true,
+            HelpText = "Directory containing PNG images to stitch.")]
+        public string InputDirectory { get; set; } = string.Empty;
+        
+        [Option('p',
+            "padding",
+            Required = false,
+            HelpText = "Padding between images in the atlas, in pixels (default: 2).",
+            Default = 2)]
+        public int Padding { get; set; } = 2;
+        
+        [Option('m',
+            "max-atlas-width",
+            Required = false,
+            HelpText = "Maximum width of the atlas, in pixels (default: 4096).",
+            Default = 4096)]
+        public int MaxAtlasWidth { get; set; } = 4096;
+        
+        [Option('n', "atlas-name", Required = false, HelpText = "Name for the output atlas file (default: atlas.png).")]
+        public string AtlasName { get; set; } = "atlas.png";
+        
+        public string OutputDirectory => Path.Combine(InputDirectory, "stitched");
+
+        [Option('c', "custom-metadata-pointer", 
+            Default = null,
+            Required = false, 
+            HelpText = "Configure the path the metadata will point to. " + 
+                       "Useful for game engines, like \"res://\" for Godot. " +
+                       "If omitted, defaults to the absolute path of the atlas file.")]
+        public string? CustomAtlasPathInMetadata { get; set; }
+    }
+
+    [Verb("unstitch",
+        HelpText =
+            "Read the atlas.png and atlas.json in the specified directory and unstitch them into individual images.")]
+    private class UnstitchOptions
+    {
+        [Value(0, MetaName = "input-directory", Required = true, HelpText = "The absolute path to the atlas PNG file.")]
+        public string InputDirectory { get; set; } = string.Empty;
+    }
+    
+    private static void Main()
     {
         Console.WriteLine("SpriteStitcher - Create Sprite Atlases from a directory of images");
         Console.WriteLine("---------------------------------------------------");
@@ -10,211 +59,74 @@ class Program
         Console.WriteLine("Then the relevant metadata is saved to a JSON file and, along with the atlas,");
         Console.WriteLine("is placed in a separate folder in your directory for easy access.");
         Console.WriteLine("Alternatively, you can also unstitch an atlas back into individual images.");
-        Console.WriteLine("---------------------------------------------------");
-        Console.WriteLine("Usage: <your-sprite-folder-path> [--stitch | --unstitch] <atlas-name> [--padding <amount (Default: 2)>]");
-        Console.WriteLine("Options:");
-        Console.WriteLine("  --stitch       : Stitch images into a sprite atlas - <atlas-name> is the name to save the atlas by, ending in .png");
-        Console.WriteLine("  --unstitch     : Unstitch a sprite atlas into individual images - <atlas-name> is the name of the atlas to unstitch");
-        Console.WriteLine("  --padding <n>  : Set padding between images in the atlas (default: 2)");
-        Console.WriteLine("---------------------------------------------------");
 
-        while (true)
-        {
-            var didJob = false;
-            
-            var (inputDirectory, operation, padding, atlasName) = ParseArguments(args);
-        
-            var outputDirectory = Path.Combine(inputDirectory, "stitched");
+        ParseLoop();
 
-            switch (operation)
-            {
-                case "--stitch":
-                    AtlasHandler.StitchAtlas(inputDirectory, outputDirectory, padding, out didJob, atlasName);
-                    break;
-                case "--unstitch":
-                    AtlasHandler.UnstitchAtlas(inputDirectory, atlasName, out didJob);
-                    break;
-                default:
-                    Console.WriteLine("No valid operation specified. Please use --stitch or --unstitch.");
-                    break;
-            }
-
-            if (didJob) break;
-            
-        }
-        
-        Console.WriteLine("Operation completed.");
-        Console.WriteLine("Press any key to exit.");
+        Console.WriteLine("Thank you for using SpriteStitcher! Press any key to exit.");
         Console.ReadKey();
     }
 
-    static (string inputDirectory, string operation, int padding, string atlasName) ParseArguments(string[] args)
+    private static void ParseLoop()
     {
+        var didJob = false;
+
+
+        while (!didJob)
+        {
+            Console.WriteLine("---------------------------------------------------");
+            Console.WriteLine("For help, type 'help' or use the --help flag.");
+            Console.WriteLine("---------------------------------------------------");
+            var parserResult = Parser.Default.ParseArguments<StitchOptions, UnstitchOptions>
+                (Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries));
         
+            parserResult
+                .WithParsed<StitchOptions>(opts =>
+                {
+                    AtlasHandler.StitchAtlas(opts.InputDirectory,
+                        opts.OutputDirectory,
+                        opts.Padding,
+                        opts.MaxAtlasWidth,
+                        opts.AtlasName,
+                        opts.CustomAtlasPathInMetadata!, // Suppressing null. It is handled in StitchAtlas.
+                        out didJob
+                    );
+                })
+                .WithParsed<UnstitchOptions>(opts =>
+                {
+                    AtlasHandler.UnstitchAtlas(opts.InputDirectory, out didJob);
+                });
+
+            if (!didJob && !QueryYesNo("Would you like to try again?"))
+            {
+                break;
+            }
+        }
+    }
+
+    public static bool QueryYesNo(string question)
+    {
         while (true)
         {
-            string[] inputArgs;
-
-            if (args.Length == 0)
+            Console.WriteLine(question + " (y/n)");
+            var response = Console.ReadKey();
+            Console.WriteLine();
+            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+            switch (response.Key)
             {
-                Console.WriteLine("Please enter a command.");
-                var inputLine = Console.ReadLine()?.Trim() ?? "";
-                inputArgs = inputLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            }
-            else
-            {
-                inputArgs = args;
-            }
-
-            if (inputArgs.Length == 0)
-            {
-                Console.WriteLine("No arguments provided. Please specify a directory and operation.");
-                args = [];
-                continue;
-            }
-            
-            var inputDirectory = inputArgs[0].Trim('"');
-            var operation = "";
-            var padding = 2; // Default padding
-            var atlasName = string.Empty;
-
-            var invalidArgs = false;
-
-            if (inputArgs[0].Equals("help", StringComparison.OrdinalIgnoreCase) ||
-                inputArgs[0].Equals("--help", StringComparison.OrdinalIgnoreCase) ||
-                inputArgs[0].Equals("-h", StringComparison.OrdinalIgnoreCase))
-            {
-                Console.WriteLine("---------------------------------------------------");
-                Console.WriteLine("Usage: <your-sprite-folder-path> [--stitch | --unstitch] <atlas-name> [--padding <amount (Default: 2)>]");
-                Console.WriteLine("Options:");
-                Console.WriteLine("  --stitch       : Stitch images into a sprite atlas - <atlas-name> is the name to save the atlas by");
-                Console.WriteLine("  --unstitch     : Unstitch a sprite atlas into individual images - <atlas-name> is the name of the atlas to unstitch");
-                Console.WriteLine("  --padding <n>  : Set padding between images in the atlas (default: 2)");
-                Console.WriteLine("---------------------------------------------------");
-                args = [];
-                continue;
-            }
-
-            if (!Directory.Exists(inputDirectory))
-            {
-                Console.WriteLine("The specified directory does not exist: " + inputDirectory);
-                args = [];
-                continue;
-            }
-
-            if (!(inputArgs.Contains("--stitch") || inputArgs.Contains("--unstitch")) 
-                                                 || (inputArgs.Contains("--stitch") && inputArgs.Contains("--unstitch")))
-            {
-                Console.WriteLine("You must specify either --stitch or --unstitch.");
-                args = [];
-                continue;
-            }
-
-            for (var i = 1; i < inputArgs.Length; i++)
-            {
-                switch (inputArgs[i].ToLower())
+                case ConsoleKey.Y:
                 {
-                    case "--stitch":
-                        operation = "--stitch";
-                        if (i + 1 < inputArgs.Length)
-                        {
-                            // The next argument should be the name for the atlas
-                            atlasName = inputArgs[i + 1].Trim('"');
-                            if (string.IsNullOrEmpty(atlasName))
-                            {
-                                Console.WriteLine("Please provide a valid atlas name.");
-                                invalidArgs = true;
-                            }
-                            i++; // Skip the next argument since it's the value for the atlas name
-                        }
-                        else
-                        {
-                            Console.WriteLine("No atlas name provided for stitching.");
-                            invalidArgs = true;
-                        }
-                        break;
-                    case "--unstitch":
-                        operation = "--unstitch";
-                        if (i + 1 < inputArgs.Length)
-                        {
-                            // The next argument should be the name of the atlas to unstitch
-                            atlasName = inputArgs[i + 1].Trim('"');
-                            if (string.IsNullOrEmpty(atlasName))
-                            {
-                                Console.WriteLine("Please provide a valid atlas name to unstitch.");
-                                invalidArgs = true;
-                            }
-                            i++; // Skip the next argument since it's the value for the atlas name
-                        }
-                        else
-                        {
-                            Console.WriteLine("No atlas name provided for unstitching.");
-                            invalidArgs = true;
-                        }
-                        break;
-                    case "--padding":
-                        if (i + 1 < inputArgs.Length && int.TryParse(inputArgs[i + 1], out var parsedPadding))
-                        {
-                            padding = parsedPadding;
-                            i++; // Skip the next argument since it's the value for padding
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid padding value. Please provide a valid integer.");
-                            invalidArgs = true;
-                        }
-                        break;
-                    default:
-                        Console.WriteLine("Invalid argument: " + inputArgs[i]);
-                        invalidArgs = true;
-                        break;
+                    return true;
                 }
-            }
-
-            if (invalidArgs)
-            {
-                Console.WriteLine("Use --help for usage.");
-                args = []; // reset for next loop
-                continue;
-            }
-            
-            // Extra validation per operation
-            bool validInputFound;
-
-            switch (operation)
-            {
-                case "stitch":
+                case ConsoleKey.N:
                 {
-                    var pngFiles = Directory.GetFiles(inputDirectory, "*.png", SearchOption.TopDirectoryOnly)
-                        .Where(path => !path.Contains("SpriteStitcher")); // avoid previous output
-                    validInputFound = pngFiles.Any();
-
-                    if (!validInputFound)
-                    {
-                        Console.WriteLine("No .png files found to stitch in the specified folder.");
-                        args = [];
-                        continue;
-                    }
-
+                    return false;
+                }
+                default:
+                {
+                    Console.WriteLine("Please enter 'y' or 'n'.");
                     break;
                 }
-                case "unstitch":
-                {
-                    var atlasPath = Path.Combine(inputDirectory, "atlas.png");
-                    var jsonPath = Path.Combine(inputDirectory, "atlas.json");
-
-                    validInputFound = File.Exists(atlasPath) && File.Exists(jsonPath);
-
-                    if (validInputFound) return (inputDirectory, operation, padding, atlasName);
-                    Console.WriteLine("No sprite atlas found in the specified folder.");
-                    args = [];
-                    continue;
-                }
             }
-
-
-            return (inputDirectory, operation, padding, atlasName);
         }
-        
     }
 }
