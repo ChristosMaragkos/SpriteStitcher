@@ -68,38 +68,63 @@ class Program
 
     private static void ParseLoop()
     {
-        var didJob = false;
+        Console.WriteLine("Type 'help' or use --help after a command for usage. Type Ctrl+C to exit.");
 
-
-        while (!didJob)
+        var keepRunning = true;
+        while (keepRunning)
         {
             Console.WriteLine("---------------------------------------------------");
-            Console.WriteLine("For help, type 'help' or use the --help flag.");
-            Console.WriteLine("---------------------------------------------------");
-            var parserResult = Parser.Default.ParseArguments<StitchOptions, UnstitchOptions>
-                (Console.ReadLine()!.Split(' ', StringSplitOptions.RemoveEmptyEntries));
-        
+            Console.Write("sprite-stitcher> ");
+            var rawInput = Console.ReadLine();
+            if (rawInput == null)
+            {
+                // EOF (unlikely in typical console usage) -> exit
+                break;
+            }
+            if (string.IsNullOrWhiteSpace(rawInput))
+            {
+                continue; // ignore empty lines
+            }
+
+            var tokens = rawInput.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            // Explicit help handling so we don't treat it as an attempted operation.
+            if (tokens.Length == 1 && tokens[0].Equals("help", StringComparison.OrdinalIgnoreCase))
+            {
+                // Trigger library help generation by simulating --help
+                Parser.Default.ParseArguments<StitchOptions, UnstitchOptions>(new[] {"--help"});
+                continue; // No prompt after help
+            }
+
+            var attemptedOperation = false; // set only when a verb successfully parsed and executed
+            var operationSucceeded = false; // reflects out param from handlers
+
+            var parserResult = Parser.Default.ParseArguments<StitchOptions, UnstitchOptions>(tokens);
             parserResult
                 .WithParsed<StitchOptions>(opts =>
                 {
-                    AtlasHandler.StitchAtlas(opts.InputDirectory,
+                    attemptedOperation = true;
+                    AtlasHandler.StitchAtlas(
+                        opts.InputDirectory,
                         opts.OutputDirectory,
                         opts.Padding,
                         opts.MaxAtlasWidth,
                         opts.AtlasName,
-                        opts.CustomAtlasPathInMetadata!, // Suppressing null. It is handled in StitchAtlas.
-                        out didJob
-                    );
+                        opts.CustomAtlasPathInMetadata!, // handled inside StitchAtlas
+                        out operationSucceeded);
                 })
                 .WithParsed<UnstitchOptions>(opts =>
                 {
-                    AtlasHandler.UnstitchAtlas(opts.InputDirectory, out didJob);
+                    attemptedOperation = true;
+                    AtlasHandler.UnstitchAtlas(opts.InputDirectory, out operationSucceeded);
                 });
 
-            if (!didJob && !QueryYesNo("Would you like to try again?"))
+            if (!attemptedOperation) continue;
+            // After any attempt (success or failure) ask if user wants another operation.
+            if (!QueryYesNo("Would you like to perform another operation?"))
             {
-                break;
+                keepRunning = false;
             }
+            // If not attempted (help, unknown command, parse errors) we just loop again without prompting.
         }
     }
 
@@ -110,22 +135,15 @@ class Program
             Console.WriteLine(question + " (y/n)");
             var response = Console.ReadKey();
             Console.WriteLine();
-            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
             switch (response.Key)
             {
                 case ConsoleKey.Y:
-                {
                     return true;
-                }
                 case ConsoleKey.N:
-                {
                     return false;
-                }
                 default:
-                {
                     Console.WriteLine("Please enter 'y' or 'n'.");
                     break;
-                }
             }
         }
     }
